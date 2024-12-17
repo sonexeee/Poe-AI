@@ -7,7 +7,7 @@
 
   <!-- External CSS Framework (optional, for modern design) -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  
+
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -19,37 +19,45 @@
       align-items: center;
       height: 100vh;
       text-align: center;
+      transition: all 0.3s ease;
     }
     .container {
       background: white;
       border-radius: 10px;
-      padding: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
+      transition: all 0.3s ease;
     }
     h1 {
       color: #333;
-      margin-bottom: 20px;
-      font-size: 2em;
+      margin-bottom: 30px;
+      font-size: 2.5em;
     }
     input {
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1em;
+      padding: 12px 15px;
+      margin: 15px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1.1em;
+      transition: border-color 0.3s ease;
+    }
+    input:focus {
+      border-color: #4CAF50;
+      outline: none;
     }
     button {
       background-color: #4CAF50;
       color: white;
-      padding: 15px 32px;
-      font-size: 1em;
+      padding: 15px 30px;
+      font-size: 1.1em;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
       margin-top: 10px;
+      transition: background-color 0.3s ease;
     }
     button:hover {
       background-color: #45a049;
@@ -58,10 +66,40 @@
       margin-top: 20px;
       font-size: 1.2em;
       color: #555;
-      padding: 10px;
+      padding: 12px;
       background-color: #f9f9f9;
       border: 1px solid #ddd;
-      border-radius: 5px;
+      border-radius: 8px;
+      animation: fadeIn 0.6s ease;
+      transition: opacity 0.5s ease;
+    }
+    #response.error {
+      color: #d9534f;
+      background-color: #f2dede;
+      border-color: #d9534f;
+    }
+    #response.success {
+      color: #5bc0de;
+      background-color: #d9edf7;
+      border-color: #5bc0de;
+    }
+    
+    /* Animation for fade-in effect */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    /* Shake animation for error */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
     }
   </style>
 </head>
@@ -81,10 +119,16 @@
 
       if (input.trim() === "") {
         responseElement.innerText = "Please enter a question!";
+        responseElement.classList.add("error");
+        responseElement.classList.remove("success");
+        responseElement.style.animation = "shake 0.5s ease";
         return;
       }
 
       responseElement.innerText = "Thinking...";
+      responseElement.classList.remove("error");
+      responseElement.classList.remove("success");
+      responseElement.style.animation = "";
 
       try {
         const res = await fetch("http://localhost:3000/chat", {
@@ -94,10 +138,19 @@
         });
 
         const data = await res.json();
-        responseElement.innerText = data.response || "Error: No response.";
+        if (data.response) {
+          responseElement.innerText = data.response;
+          responseElement.classList.add("success");
+          responseElement.classList.remove("error");
+        } else {
+          responseElement.innerText = "Error: No response from AI.";
+          responseElement.classList.add("error");
+        }
       } catch (error) {
         console.error(error);
         responseElement.innerText = "Something went wrong!";
+        responseElement.classList.add("error");
+        responseElement.style.animation = "shake 0.5s ease";
       }
     }
   </script>
