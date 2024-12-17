@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Local AI</title>
+</head>
+<body>
+  <h1>Talk to Your Local AI</h1>
+  <input id="userInput" placeholder="Ask me anything..." />
+  <button onclick="sendMessage()">Send</button>
+  <p id="response">Waiting for input...</p>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput").value;
+      const responseElement = document.getElementById("response");
+
+      responseElement.innerText = "Thinking...";
+
+      const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input })
+      });
+
+      const data = await res.json();
+      responseElement.innerText = data.response || "Error: No response.";
+    }
+  </script>
+</body>
+</html>
